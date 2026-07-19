@@ -1,8 +1,13 @@
 {
+<<<<<<< HEAD
   "devDependencies": {
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^21.0.0",
     "stylelint-csstree-validator": "^1.9.0",
     "stylelint-scss": "^3.21.0"
+=======
+  "dependencies": {
+    "axios": "^1.7.7"
+>>>>>>> 29954f3 (Fix Routes and Payment)
   }
 }
