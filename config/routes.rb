@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       resources :roles, only: [:index, :create]
       resources :user_roles, only: [:create, :destroy]
 
-      resources :users, only: [:index]
+      resources :users, only: [:index, :create, :show]
       resources :members
       resources :devotions
       resources :leadership_positions
