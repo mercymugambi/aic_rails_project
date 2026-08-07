@@ -1,11 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-<<<<<<< HEAD
-ruby '3.2.2'
-=======
 ruby "3.4.4"
->>>>>>> 29954f3 (Fix Routes and Payment)
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.0.7'
@@ -77,6 +73,8 @@ group :test do
 end
 
 gem 'devise'
+gem 'devise-jwt'
+gem 'rack-cors'
 
 gem 'dotenv-rails', groups: %i[development test]
 
