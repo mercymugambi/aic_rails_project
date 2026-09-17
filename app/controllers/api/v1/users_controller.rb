@@ -2,6 +2,7 @@
 module Api
   module V1
     class UsersController < ApplicationController
+      skip_before_action :verify_authenticity_token
       before_action :authenticate_user!
       before_action :authorize_user_management!, only: [:create]
       before_action :set_user, only: [:show]

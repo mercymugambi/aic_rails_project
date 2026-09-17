@@ -10,15 +10,6 @@ module AicRailsProject
   class Application < Rails::Application
     config.load_defaults 7.0
 
-        # CORS settings
-        config.middleware.insert_before 0, Rack::Cors do
-          allow do
-            origins '*' # or specify your React app's origin# The origin of your frontend app
-            resource '*',
-              headers: :any,
-              methods: [:get, :post, :put, :patch, :delete, :options, :head],
-              credentials: false
+    # CORS is configured in config/initializers/cors.rb
   end
-end
-end
-end
+end
