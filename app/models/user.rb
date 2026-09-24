@@ -1,15 +1,15 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # JWT revocation: each user's `jti` is rotated on logout, invalidating issued tokens.
   include Devise::JWT::RevocationStrategies::JTIMatcher
 
-  devise :database_authenticatable, :registerable,
+  # No :registerable - accounts are created only by the super admin (POST /api/v1/users).
+  devise :database_authenticatable,
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
 
-  belongs_to :member, optional: true # Allow member to be optional
-  has_many :devotions
-  has_and_belongs_to_many :leadership_positions, through: :member
+  # Optional link to the congregation record of the person using this account.
+  belongs_to :member, optional: true
+  has_many :leadership_positions, through: :member
   has_many :created_fellowship_groups, class_name: 'FellowshipGroup', foreign_key: 'created_by_id'
   has_many :created_events, class_name: 'Event', foreign_key: 'created_by_id'
   has_many :created_devotions, class_name: 'Devotion', foreign_key: 'created_by_id'
@@ -18,16 +18,6 @@ class User < ApplicationRecord
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
   has_many :assigned_roles, class_name: 'UserRole', foreign_key: 'assigned_by_id'
-
-  # Define the check_leadership_position method to validate presence of leadership_position
-  validate :check_leadership_position
-
-  #  validate :super_admin_without_member and leadership_role
-  def check_leadership_position
-    return unless !super_admin? && (member.nil? || member.leadership_positions.empty?)
-
-    errors.add(:base, 'User must have a leadership position and be a member')
-  end
 
   # Check if user has a specific permission (through any of their roles)
   def has_permission?(permission_name)

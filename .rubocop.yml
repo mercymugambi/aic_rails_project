@@ -2,7 +2,7 @@ AllCops:
   NewCops: enable
   Exclude:
     - "db/**/*"
-    - "bin/*" 
+    - "bin/*"
     - "config/**/*"
     - "Guardfile"
     - "Rakefile"
@@ -23,6 +23,8 @@ Metrics/AbcSize:
     - "app/models/*"
   Max: 50
 Metrics/ClassLength:
+  Exclude:
+    - "test/**/*"
   Max: 150
 Metrics/BlockLength:
   AllowedMethods: ['describe']
@@ -57,4 +59,12 @@ Style/HashEachMethods:
 Style/HashTransformKeys:
   Enabled: false
 Style/HashTransformValues:
+  Enabled: false
+Naming/PredicatePrefix:
+  # RBAC query methods follow the common has_role?/has_permission? convention.
+  AllowedMethods:
+    - has_permission?
+    - has_role?
+Layout/EndOfLine:
+  # Line endings are normalized by git (core.autocrlf), so this would differ between Windows and CI.
   Enabled: false

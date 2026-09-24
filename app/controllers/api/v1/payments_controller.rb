@@ -19,30 +19,30 @@ module Api
 
         # Prepare the STK Push request
         timestamp = Time.now.strftime('%Y%m%d%H%M%S')
-        password = Base64.strict_encode64("#{ENV['MPESA_PAYBILL_SHORTCODE']}#{ENV['MPESA_PASSKEY']}#{timestamp}")
+        shortcode = ENV.fetch('MPESA_PAYBILL_SHORTCODE', nil)
+        password = Base64.strict_encode64("#{shortcode}#{ENV.fetch('MPESA_PASSKEY', nil)}#{timestamp}")
 
         stk_push_data = {
-          "BusinessShortCode" => ENV['MPESA_PAYBILL_SHORTCODE'],
-          "Password" => password,
-          "Timestamp" => timestamp,
-          "TransactionType" => "CustomerPayBillOnline",
-          "Amount" => amount,
-          "PartyA" => phone,
-          "PartyB" => ENV['MPESA_PAYBILL_SHORTCODE'],
-          "PhoneNumber" => phone,
-          "CallBackURL" => ENV['CALLBACK_URL'],
-          "AccountReference" => "Payment for goods",
-          "TransactionDesc" => "Payment request for services"
+          'BusinessShortCode' => shortcode,
+          'Password' => password,
+          'Timestamp' => timestamp,
+          'TransactionType' => 'CustomerPayBillOnline',
+          'Amount' => amount,
+          'PartyA' => phone,
+          'PartyB' => shortcode,
+          'PhoneNumber' => phone,
+          'CallBackURL' => ENV.fetch('CALLBACK_URL', nil),
+          'AccountReference' => 'Payment for goods',
+          'TransactionDesc' => 'Payment request for services'
         }
 
         # Send the STK Push request
-        response = HTTParty.post("#{ENV['MPESA_BASE_URL']}/mpesa/stkpush/v1/processrequest",
-          body: stk_push_data.to_json,
-          headers: {
-            "Authorization" => "Bearer #{token}",
-            "Content-Type" => "application/json"
-          }
-        )
+        response = HTTParty.post("#{ENV.fetch('MPESA_BASE_URL', nil)}/mpesa/stkpush/v1/processrequest",
+                                 body: stk_push_data.to_json,
+                                 headers: {
+                                   'Authorization' => "Bearer #{token}",
+                                   'Content-Type' => 'application/json'
+                                 })
 
         if response.code == 200
           render json: { message: 'Payment request sent. Please check your phone.' }, status: :ok
@@ -55,11 +55,11 @@ module Api
       def callback
         callback_data = params[:Body][:stkCallback]
 
-        if callback_data[:ResultCode] == 0
+        if callback_data[:ResultCode] == 0 # rubocop:disable Style/NumericPredicate -- .zero? would raise on nil
           # Handle successful payment
-          transaction_id = callback_data[:CallbackMetadata][:Item].find { |i| i[:Name] == "MpesaReceiptNumber" }[:Value]
-          amount = callback_data[:CallbackMetadata][:Item].find { |i| i[:Name] == "Amount" }[:Value]
-          phone_number = callback_data[:CallbackMetadata][:Item].find { |i| i[:Name] == "PhoneNumber" }[:Value]
+          transaction_id = callback_data[:CallbackMetadata][:Item].find { |i| i[:Name] == 'MpesaReceiptNumber' }[:Value]
+          amount = callback_data[:CallbackMetadata][:Item].find { |i| i[:Name] == 'Amount' }[:Value]
+          phone_number = callback_data[:CallbackMetadata][:Item].find { |i| i[:Name] == 'PhoneNumber' }[:Value]
 
           # Log payment details (Assuming you have a Payment model)
           Payment.create(
@@ -79,15 +79,14 @@ module Api
       private
 
       def generate_mpesa_token
-        consumer_key = ENV['MPESA_CONSUMER_KEY']
-        consumer_secret = ENV['MPESA_CONSUMER_SECRET']
+        consumer_key = ENV.fetch('MPESA_CONSUMER_KEY', nil)
+        consumer_secret = ENV.fetch('MPESA_CONSUMER_SECRET', nil)
         credentials = Base64.strict_encode64("#{consumer_key}:#{consumer_secret}")
 
-        response = HTTParty.get("#{ENV['MPESA_BASE_URL']}/oauth/v1/generate?grant_type=client_credentials",
-          headers: {
-            "Authorization" => "Basic #{credentials}"
-          }
-        )
+        response = HTTParty.get("#{ENV.fetch('MPESA_BASE_URL', nil)}/oauth/v1/generate?grant_type=client_credentials",
+                                headers: {
+                                  'Authorization' => "Basic #{credentials}"
+                                })
 
         JSON.parse(response.body)['access_token']
       end

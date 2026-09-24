@@ -1,4 +1,3 @@
-# app/controllers/api/v1/user_roles_controller.rb
 module Api
   module V1
     class UserRolesController < ApplicationController
@@ -25,7 +24,7 @@ module Api
         if user_role.save
           render json: {
             message: "Role '#{role.name}' assigned to #{user.email}",
-            user_role: user_role.as_json(include: { role: { only: [:id, :name] }, user: { only: [:id, :email] } })
+            user_role: user_role.as_json(include: { role: { only: %i[id name] }, user: { only: %i[id email] } })
           }, status: :created
         else
           render json: { errors: user_role.errors.full_messages }, status: :unprocessable_entity

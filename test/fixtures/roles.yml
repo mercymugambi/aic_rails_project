@@ -1,0 +1,15 @@
+church_admin:
+  name: church_admin
+  description: Church Administrator
+
+treasurer:
+  name: treasurer
+  description: Handles church finances
+
+secretary:
+  name: secretary
+  description: Keeps the membership register
+
+group_manager:
+  name: group_manager
+  description: Runs the fellowship groups

@@ -1,0 +1,19 @@
+church_admin_manage_users:
+  role: church_admin
+  permission: manage_users
+
+church_admin_manage_events:
+  role: church_admin
+  permission: manage_events
+
+treasurer_manage_finance:
+  role: treasurer
+  permission: manage_finance
+
+secretary_manage_members:
+  role: secretary
+  permission: manage_members
+
+group_manager_manage_fellowship_groups:
+  role: group_manager
+  permission: manage_fellowship_groups

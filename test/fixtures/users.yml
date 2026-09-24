@@ -1,11 +1,40 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# All fixture users have the password "password123".
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+super_admin:
+  email: admin@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-super_admin-jti
+  super_admin: true
+
+church_admin:
+  email: churchadmin@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-church_admin-jti
+  super_admin: false
+
+treasurer:
+  member: grace
+  email: treasurer@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-treasurer-jti
+  super_admin: false
+
+secretary:
+  email: secretary@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-secretary-jti
+  super_admin: false
+
+# manage_members (secretary role) + manage_users (church_admin role), not super admin.
+registrar:
+  email: registrar@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-registrar-jti
+  super_admin: false
+
+# manage_fellowship_groups only.
+group_manager:
+  email: groupmanager@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-group_manager-jti
+  super_admin: false

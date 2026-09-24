@@ -53,21 +53,11 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  # Avoid Windows file-lock conflicts in Sprockets' temporary asset cache.
+  config.assets.configure do |environment|
+    environment.cache = Sprockets::Cache::NullStore.new
+  end
 
-#   config.action_mailer.delivery_method = :smtp
-#   config.action_mailer.smtp_settings = {
-#   address: 'smtp.gmail.com',
-#   port: 587,
-#   domain: 'your-domain.com',
-#   user_name: 'mercymugambi2016@gmail.com',
-#   authentication: 'plain',
-#   enable_starttls_auto: true
-# }
-
-
-# Set the default URL host for Devise confirmation emails.
-config.action_mailer.default_url_options = { host: 'localhost:3000' }
-# config.action_mailer.logger = ActiveSupport::Logger.new(STDOUT)
-
-
+  # Default URL host for links in Devise emails (password reset, confirmation).
+  config.action_mailer.default_url_options = { host: 'localhost:3000' }
 end

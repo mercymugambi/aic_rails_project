@@ -1,7 +1,22 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+jane:
+  first_name: Jane
+  last_name: Wanjiku
+  phone_number: '254712345678'
+  fellowship_groups: choir
 
-one:
-  \: MyString
+# Linked to the treasurer user account (see users.yml), so it can't be deleted.
+grace:
+  first_name: Grace
+  middle_name: Wanjiru
+  last_name: Kamau
+  phone_number: '+254 712 345 678'
+  email: grace@example.com
+  date_of_birth: 1990-03-12
+  place_of_residence: Kabuku
+  fellowship_groups: choir, youth
+  leadership_positions: treasurer_position
 
-two:
-  \: MyString
+peter:
+  first_name: Peter
+  last_name: Otieno
+  phone_number: '0722 000 111'

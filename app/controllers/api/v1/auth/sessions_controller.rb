@@ -1,4 +1,3 @@
-# app/controllers/api/v1/auth/sessions_controller.rb
 module Api
   module V1
     module Auth
@@ -13,31 +12,20 @@ module Api
           if resource.persisted?
             render json: {
               message: 'Logged in successfully.',
-              user: user_data(resource)
+              user: UserSerializer.new(resource).as_json
             }, status: :ok
           else
             render json: { error: 'Invalid email or password.' }, status: :unauthorized
           end
         end
 
-        def respond_to_on_destroy
+        # Devise 4.9+ passes status options (e.g. non_navigational_status:); this API always responds with JSON.
+        def respond_to_on_destroy(**)
           if current_user
             render json: { message: 'Logged out successfully.' }, status: :ok
           else
             render json: { error: 'No active session.' }, status: :unauthorized
           end
-        end
-
-        def user_data(user)
-          {
-            id: user.id,
-            email: user.email,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            super_admin: user.super_admin,
-            roles: user.roles.pluck(:name),
-            permissions: user.all_permissions.pluck(:name)
-          }
         end
       end
     end

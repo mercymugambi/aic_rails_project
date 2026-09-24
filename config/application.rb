@@ -12,4 +12,4 @@ module AicRailsProject
 
     # CORS is configured in config/initializers/cors.rb
   end
-end
+end

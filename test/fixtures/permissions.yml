@@ -1,0 +1,19 @@
+manage_users:
+  name: manage_users
+  description: Create and manage user accounts
+
+manage_events:
+  name: manage_events
+  description: Create, edit, and delete events
+
+manage_finance:
+  name: manage_finance
+  description: Manage financial records and payments
+
+manage_members:
+  name: manage_members
+  description: Create, edit, and delete members
+
+manage_fellowship_groups:
+  name: manage_fellowship_groups
+  description: Create and manage fellowship groups

@@ -1,0 +1,29 @@
+church_admin_is_church_admin:
+  user: church_admin
+  role: church_admin
+  assigned_by: super_admin
+
+treasurer_is_treasurer:
+  user: treasurer
+  role: treasurer
+  assigned_by: super_admin
+
+secretary_is_secretary:
+  user: secretary
+  role: secretary
+  assigned_by: super_admin
+
+registrar_is_secretary:
+  user: registrar
+  role: secretary
+  assigned_by: super_admin
+
+registrar_is_church_admin:
+  user: registrar
+  role: church_admin
+  assigned_by: super_admin
+
+group_manager_is_group_manager:
+  user: group_manager
+  role: group_manager
+  assigned_by: super_admin
