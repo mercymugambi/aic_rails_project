@@ -38,3 +38,10 @@ group_manager:
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
   jti: fixture-group_manager-jti
   super_admin: false
+
+# manage_gallery only.
+gallery_manager:
+  email: gallerymanager@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-gallery_manager-jti
+  super_admin: false

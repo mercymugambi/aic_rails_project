@@ -74,10 +74,30 @@ The API is available at http://localhost:3000. CORS allows a frontend on port 30
 | POST, PATCH, DELETE | `/api/v1/fellowship_groups[/:id]` | Create / edit / delete a group (`{ "fellowship_group": {...} }`) | `manage_fellowship_groups` |
 | POST | `/api/v1/fellowship_groups/:id/members` | Add members (`{ "member_ids": [...] }`) | `manage_fellowship_groups` or `manage_members` |
 | DELETE | `/api/v1/fellowship_groups/:id/members/:member_id` | Remove a member (clears the leader if it was them) | `manage_fellowship_groups` or `manage_members` |
+| GET | `/api/v1/gallery_images` | List photos as a plain array, newest `taken_on` first (undated last), each with an absolute `image_url` | Public |
+| POST | `/api/v1/gallery_images` | Upload one photo as multipart form data: `gallery_image[image]` (JPG, PNG or WEBP, max 10 MB), `gallery_image[title]`, `gallery_image[category]`, `gallery_image[taken_on]` | `manage_gallery` |
+| PATCH | `/api/v1/gallery_images/:id` | Edit `title`, `category`, `taken_on` (`{ "gallery_image": {...} }`; `null` clears category or date) | `manage_gallery` |
+| DELETE | `/api/v1/gallery_images/:id` | Delete a photo and its stored file | `manage_gallery` |
 | POST | `/api/v1/payment` | Start an M-Pesa STK Push | Public |
 | POST | `/api/v1/callback` | M-Pesa result callback | Public (Safaricom) |
 
 Run `bundle exec rails routes` for the full list, which also includes Devise's password routes.
+
+## Cloudinary setup (gallery photos)
+
+Gallery photos are stored with Active Storage. When `CLOUDINARY_URL` is set they go to Cloudinary (folder `aic-kabuku/gallery`); without it they are saved on the local disk in `storage/`, so uploads work before Cloudinary is set up.
+
+1. Create a free account at https://cloudinary.com.
+2. On the dashboard (Settings > API Keys), copy the **API environment variable**. It looks like `cloudinary://<api_key>:<api_secret>@<cloud_name>`.
+3. Add it to `.env`:
+
+   ```
+   CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
+   ```
+
+4. Restart the Rails server.
+
+New uploads then return `https://res.cloudinary.com/...` image URLs. Photos uploaded before the switch stay on the local disk and keep working. In production, set `CLOUDINARY_URL` in the deployment environment. Never commit real keys.
 
 ## Users and access control
 

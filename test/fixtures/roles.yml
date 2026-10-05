@@ -13,3 +13,7 @@ secretary:
 group_manager:
   name: group_manager
   description: Runs the fellowship groups
+
+gallery_manager:
+  name: gallery_manager
+  description: Looks after the photo gallery

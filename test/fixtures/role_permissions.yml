@@ -17,3 +17,7 @@ secretary_manage_members:
 group_manager_manage_fellowship_groups:
   role: group_manager
   permission: manage_fellowship_groups
+
+gallery_manager_manage_gallery:
+  role: gallery_manager
+  permission: manage_gallery

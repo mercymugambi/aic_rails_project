@@ -17,3 +17,7 @@ manage_members:
 manage_fellowship_groups:
   name: manage_fellowship_groups
   description: Create and manage fellowship groups
+
+manage_gallery:
+  name: manage_gallery
+  description: Upload and manage gallery images

@@ -37,8 +37,12 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files in Cloudinary when CLOUDINARY_URL is set, otherwise on the local file system
+  # (see config/storage.yml for options). Set CLOUDINARY_URL in the deployment environment.
+  config.active_storage.service = ENV['CLOUDINARY_URL'].present? ? :cloudinary : :local
+
+  # Host for absolute URLs of locally stored files (only needed without Cloudinary), e.g. https://api.example.com
+  Rails.application.routes.default_url_options = { host: ENV['APP_HOST'] } if ENV['APP_HOST'].present?
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil

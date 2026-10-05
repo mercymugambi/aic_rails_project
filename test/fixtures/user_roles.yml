@@ -27,3 +27,8 @@ group_manager_is_group_manager:
   user: group_manager
   role: group_manager
   assigned_by: super_admin
+
+gallery_manager_is_gallery_manager:
+  user: gallery_manager
+  role: gallery_manager
+  assigned_by: super_admin

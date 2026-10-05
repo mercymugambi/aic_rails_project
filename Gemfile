@@ -40,6 +40,9 @@ gem 'devise-jwt'
 # Cross-origin requests from the frontend
 gem 'rack-cors'
 
+# Gallery photo storage: Active Storage service "Cloudinary", configured by CLOUDINARY_URL
+gem 'cloudinary'
+
 # Load environment variables from .env in development and test
 gem 'dotenv-rails', groups: %i[development test]
 

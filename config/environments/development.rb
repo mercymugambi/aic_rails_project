@@ -27,8 +27,12 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files in Cloudinary when CLOUDINARY_URL is set (dotenv loads .env before this file),
+  # otherwise on the local file system (see config/storage.yml for options).
+  config.active_storage.service = ENV['CLOUDINARY_URL'].present? ? :cloudinary : :local
+
+  # Host for absolute URLs built outside a request, e.g. local gallery image_url values.
+  Rails.application.routes.default_url_options = { protocol: 'http', host: 'localhost', port: 3000 }
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false

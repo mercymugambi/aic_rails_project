@@ -36,6 +36,7 @@ Rails.application.routes.draw do
         end
       end
       resources :events, only: %i[index create]
+      resources :gallery_images, only: %i[index create update destroy]
     end
   end
 end
