@@ -15,6 +15,7 @@ permissions = [
   { name: 'manage_visitors', description: 'Register and manage visitors' },
   { name: 'manage_appointments', description: 'Manage pastoral appointments' },
   { name: 'manage_gallery', description: 'Upload and manage gallery images' },
+  { name: 'manage_blog', description: 'Write, publish and manage blog posts' },
   { name: 'manage_settings', description: 'Manage church settings and configuration' }
 ]
 

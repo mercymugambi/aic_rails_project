@@ -17,3 +17,7 @@ group_manager:
 gallery_manager:
   name: gallery_manager
   description: Looks after the photo gallery
+
+blog_editor:
+  name: blog_editor
+  description: Writes and publishes blog posts

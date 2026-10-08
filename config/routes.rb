@@ -37,6 +37,10 @@ Rails.application.routes.draw do
       end
       resources :events, only: %i[index create]
       resources :gallery_images, only: %i[index create update destroy]
+
+      # Blog. show takes the post's slug as :id; update and destroy take the numeric id.
+      resources :blog_posts, only: %i[index show create update destroy]
+      resources :blog_post_images, only: %i[create]
     end
   end
 end

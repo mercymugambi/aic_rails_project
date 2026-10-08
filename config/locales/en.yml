@@ -31,3 +31,8 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    attributes:
+      blog_post:
+        body: "Content"
+        published_on: "Publish date"

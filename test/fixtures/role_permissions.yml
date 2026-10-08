@@ -21,3 +21,7 @@ group_manager_manage_fellowship_groups:
 gallery_manager_manage_gallery:
   role: gallery_manager
   permission: manage_gallery
+
+blog_editor_manage_blog:
+  role: blog_editor
+  permission: manage_blog

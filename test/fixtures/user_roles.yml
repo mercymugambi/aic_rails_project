@@ -32,3 +32,8 @@ gallery_manager_is_gallery_manager:
   user: gallery_manager
   role: gallery_manager
   assigned_by: super_admin
+
+blog_editor_is_blog_editor:
+  user: blog_editor
+  role: blog_editor
+  assigned_by: super_admin

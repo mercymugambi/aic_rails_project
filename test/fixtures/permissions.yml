@@ -21,3 +21,7 @@ manage_fellowship_groups:
 manage_gallery:
   name: manage_gallery
   description: Upload and manage gallery images
+
+manage_blog:
+  name: manage_blog
+  description: Write, publish and manage blog posts

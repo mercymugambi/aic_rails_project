@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_05_104504) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_08_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,39 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_05_104504) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "blog_post_images", force: :cascade do |t|
+    t.string "token", null: false
+    t.bigint "blog_post_id"
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blog_post_id"], name: "index_blog_post_images_on_blog_post_id"
+    t.index ["created_at"], name: "index_blog_post_images_on_created_at"
+    t.index ["created_by_id"], name: "index_blog_post_images_on_created_by_id"
+    t.index ["token"], name: "index_blog_post_images_on_token", unique: true
+  end
+
+  create_table "blog_posts", force: :cascade do |t|
+    t.string "title", limit: 150, null: false
+    t.string "slug", limit: 80, null: false
+    t.text "excerpt"
+    t.jsonb "body", default: [], null: false
+    t.string "category"
+    t.string "tags", default: [], null: false, array: true
+    t.string "status", default: "published", null: false
+    t.boolean "featured", default: false, null: false
+    t.date "published_on"
+    t.string "author_name"
+    t.string "author_role"
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_blog_posts_on_created_by_id"
+    t.index ["featured"], name: "index_blog_posts_on_single_featured", unique: true, where: "featured"
+    t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
+    t.index ["status", "published_on"], name: "index_blog_posts_on_status_and_published_on"
   end
 
   create_table "devotions", force: :cascade do |t|
@@ -182,6 +215,9 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_05_104504) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "blog_post_images", "blog_posts", on_delete: :nullify
+  add_foreign_key "blog_post_images", "users", column: "created_by_id", on_delete: :nullify
+  add_foreign_key "blog_posts", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "devotions", "users", column: "created_by_id"
   add_foreign_key "events", "users", column: "created_by_id"
   add_foreign_key "fellowship_groups", "members", column: "leader_member_id", on_delete: :nullify

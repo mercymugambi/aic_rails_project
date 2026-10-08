@@ -78,14 +78,31 @@ The API is available at http://localhost:3000. CORS allows a frontend on port 30
 | POST | `/api/v1/gallery_images` | Upload one photo as multipart form data: `gallery_image[image]` (JPG, PNG or WEBP, max 10 MB), `gallery_image[title]`, `gallery_image[category]`, `gallery_image[taken_on]` | `manage_gallery` |
 | PATCH | `/api/v1/gallery_images/:id` | Edit `title`, `category`, `taken_on` (`{ "gallery_image": {...} }`; `null` clears category or date) | `manage_gallery` |
 | DELETE | `/api/v1/gallery_images/:id` | Delete a photo and its stored file | `manage_gallery` |
+| GET | `/api/v1/blog_posts` | Published posts as a plain array, newest `published_on` first, with absolute `cover_image_url` and `read_minutes` | Public |
+| GET | `/api/v1/blog_posts?status=all` | Same list including drafts | `manage_blog` |
+| GET | `/api/v1/blog_posts/:slug` | A published post, looked up by **slug** (404 for drafts) | Public |
+| POST | `/api/v1/blog_posts` | Create a post as multipart form data under `blog_post[...]`; `body` is a JSON string of blocks, `tags[]` repeated, optional `cover_image` (JPG, PNG or WEBP, max 10 MB) | `manage_blog` |
+| PATCH | `/api/v1/blog_posts/:id` | Partial update, multipart or JSON (only the keys sent change); `remove_cover_image=true` deletes the cover | `manage_blog` |
+| DELETE | `/api/v1/blog_posts/:id` | Delete a post, its cover and the photos in its body | `manage_blog` |
+| POST | `/api/v1/blog_post_images` | Upload a photo for a post's body (`blog_post_image[image]`); returns `{ id, url }`, and the body's image block refers to it by `image_id` | `manage_blog` |
 | POST | `/api/v1/payment` | Start an M-Pesa STK Push | Public |
 | POST | `/api/v1/callback` | M-Pesa result callback | Public (Safaricom) |
 
 Run `bundle exec rails routes` for the full list, which also includes Devise's password routes.
 
-## Cloudinary setup (gallery photos)
+## Blog posts
 
-Gallery photos are stored with Active Storage. When `CLOUDINARY_URL` is set they go to Cloudinary (folder `aic-kabuku/gallery`); without it they are saved on the local disk in `storage/`, so uploads work before Cloudinary is set up.
+A post's `body` is an array of blocks: `paragraph` and `heading` (`text`), `quote` (`text`, optional `cite`), `list` (`items`) and `image` (`image_id`, optional `caption`). Other keys are dropped. A draft needs only a title; a published post also needs an excerpt, a category, a publish date and some content. Only one post can be featured at a time, and a post's slug never changes unless a new one is sent, so old links keep working.
+
+Photos inside a post are uploaded first, while the writer is drafting, so some are never used. Delete unused photos older than 24 hours once a day (Windows Task Scheduler locally, or a cron job on the host):
+
+```powershell
+bundle exec rails blog:purge_orphan_images
+```
+
+## Cloudinary setup (gallery and blog photos)
+
+Gallery and blog photos are stored with Active Storage. When `CLOUDINARY_URL` is set they go to Cloudinary (folder `aic-kabuku/gallery`); without it they are saved on the local disk in `storage/`, so uploads work before Cloudinary is set up.
 
 1. Create a free account at https://cloudinary.com.
 2. On the dashboard (Settings > API Keys), copy the **API environment variable**. It looks like `cloudinary://<api_key>:<api_secret>@<cloud_name>`.
@@ -139,7 +156,7 @@ db/
 
 ```powershell
 bundle exec rails db:migrate       # Apply pending migrations
-bundle exec rails db:seed          # Load seed data (safe to re-run)
+bundle exec rails db:seed          # Load seed data (safe to re-run; resets the super admin password)
 bundle exec rails test             # Run the test suite
 bundle exec rails routes           # List routes
 bundle exec rubocop                # Lint Ruby code (also runs in CI on pull requests)

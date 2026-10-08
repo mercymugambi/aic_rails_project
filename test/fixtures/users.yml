@@ -45,3 +45,10 @@ gallery_manager:
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
   jti: fixture-gallery_manager-jti
   super_admin: false
+
+# manage_blog only.
+blog_editor:
+  email: blogeditor@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-blog_editor-jti
+  super_admin: false
