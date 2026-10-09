@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_08_090000) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_09_090100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -85,15 +85,46 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_08_090000) do
     t.index ["created_by_id"], name: "index_devotions_on_created_by_id"
   end
 
+  create_table "event_registrations", force: :cascade do |t|
+    t.bigint "event_id", null: false
+    t.string "name", null: false
+    t.string "phone"
+    t.string "email"
+    t.integer "seats", default: 1, null: false
+    t.string "phone_key"
+    t.string "email_key"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "email_key"], name: "index_event_registrations_on_event_id_and_email_key", unique: true, where: "(email_key IS NOT NULL)"
+    t.index ["event_id", "phone_key"], name: "index_event_registrations_on_event_id_and_phone_key", unique: true, where: "(phone_key IS NOT NULL)"
+    t.index ["event_id"], name: "index_event_registrations_on_event_id"
+  end
+
   create_table "events", force: :cascade do |t|
-    t.string "image"
     t.string "title"
     t.text "description"
     t.date "date"
     t.bigint "created_by_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "category"
+    t.string "status", default: "published", null: false
+    t.boolean "featured", default: false, null: false
+    t.date "end_date"
+    t.time "start_time"
+    t.time "end_time"
+    t.string "location"
+    t.string "speaker"
+    t.string "speaker_role"
+    t.string "audience"
+    t.string "registration", default: "none", null: false
+    t.string "registration_url"
+    t.integer "capacity"
+    t.integer "registrations_count", default: 0, null: false
+    t.integer "seats_taken", default: 0, null: false
     t.index ["created_by_id"], name: "index_events_on_created_by_id"
+    t.index ["featured"], name: "index_events_on_single_featured", unique: true, where: "featured"
+    t.index ["status", "date"], name: "index_events_on_status_and_date"
   end
 
   create_table "fellowship_groups", force: :cascade do |t|
@@ -219,6 +250,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_08_090000) do
   add_foreign_key "blog_post_images", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "blog_posts", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "devotions", "users", column: "created_by_id"
+  add_foreign_key "event_registrations", "events", on_delete: :cascade
   add_foreign_key "events", "users", column: "created_by_id"
   add_foreign_key "fellowship_groups", "members", column: "leader_member_id", on_delete: :nullify
   add_foreign_key "fellowship_groups", "users", column: "created_by_id"

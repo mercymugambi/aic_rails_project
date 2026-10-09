@@ -37,3 +37,8 @@ blog_editor_is_blog_editor:
   user: blog_editor
   role: blog_editor
   assigned_by: super_admin
+
+events_manager_is_events_manager:
+  user: events_manager
+  role: events_manager
+  assigned_by: super_admin

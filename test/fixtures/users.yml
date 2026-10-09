@@ -52,3 +52,12 @@ blog_editor:
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
   jti: fixture-blog_editor-jti
   super_admin: false
+
+# manage_events only.
+events_manager:
+  firstname: Esther
+  lastname: Muthoni
+  email: eventsmanager@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-events_manager-jti
+  super_admin: false

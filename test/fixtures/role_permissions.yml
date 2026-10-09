@@ -25,3 +25,7 @@ gallery_manager_manage_gallery:
 blog_editor_manage_blog:
   role: blog_editor
   permission: manage_blog
+
+events_manager_manage_events:
+  role: events_manager
+  permission: manage_events

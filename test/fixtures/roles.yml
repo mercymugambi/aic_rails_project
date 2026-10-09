@@ -21,3 +21,7 @@ gallery_manager:
 blog_editor:
   name: blog_editor
   description: Writes and publishes blog posts
+
+events_manager:
+  name: events_manager
+  description: Plans and publishes events

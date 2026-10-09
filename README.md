@@ -67,7 +67,15 @@ The API is available at http://localhost:3000. CORS allows a frontend on port 30
 | DELETE | `/api/v1/members/:id` | Delete (409 if linked to a user account) | `manage_members` |
 | POST | `/api/v1/members/bulk_destroy` | Delete up to 500 members (`{ "ids": [...] }`) | `manage_members` |
 | GET, POST | `/api/v1/devotions` | List / create devotions | Public |
-| GET, POST | `/api/v1/events` | List / create events | Public |
+| GET | `/api/v1/events?when=upcoming\|past\|all` | Published and cancelled events (upcoming by default, soonest first), with absolute `cover_image_url`, seat counts and `registration_open` | Public |
+| GET | `/api/v1/events?status=all` | Same list including drafts (combines with `when`) | `manage_events` |
+| GET | `/api/v1/events/:id` | One event (404 for a draft unless the token has `manage_events`) | Public |
+| POST | `/api/v1/events` | Create an event, multipart form data or JSON under `event[...]`, optional `cover_image` (JPG, PNG or WEBP, max 10 MB) | `manage_events` |
+| PATCH | `/api/v1/events/:id` | Partial update (only the keys sent change); `remove_cover_image=true` deletes the cover | `manage_events` |
+| DELETE | `/api/v1/events/:id` | Delete an event, its RSVPs and its cover photo | `manage_events` |
+| POST | `/api/v1/events/:id/registrations` | RSVP (`{ "registration": { "name", "phone", "email", "seats" } }`); at most 5 per connection per 10 minutes | Public |
+| GET | `/api/v1/events/:id/registrations` | The RSVPs for an event, oldest first | `manage_events` |
+| DELETE | `/api/v1/events/:event_id/registrations/:id` | Remove an RSVP and free its seats | `manage_events` |
 | GET, POST | `/api/v1/leadership_positions` | List / create leadership positions | Public |
 | GET | `/api/v1/fellowship_groups` | List groups with leader and member count | `manage_fellowship_groups` or `manage_members` |
 | GET | `/api/v1/fellowship_groups/:id` | Show a group with its members | `manage_fellowship_groups` or `manage_members` |
@@ -89,6 +97,14 @@ The API is available at http://localhost:3000. CORS allows a frontend on port 30
 | POST | `/api/v1/callback` | M-Pesa result callback | Public (Safaricom) |
 
 Run `bundle exec rails routes` for the full list, which also includes Devise's password routes.
+
+## Events
+
+Event dates and times are the church's local time (Africa/Nairobi, UTC+3), whatever the server's time zone. An event is upcoming until its last day (`end_date`, or `date` for a one-day event) is over. A draft needs only a title and a date; published and cancelled events also need a category and a description. Only one event can be featured at a time.
+
+How people sign up is set by `registration`: `none`, `rsvp` (on the website, with an optional `capacity`) or `external` (a `registration_url`). Website sign-ups close when the event starts or is full. Each person can sign up once per event: phone numbers are compared with Kenyan forms unified (`0712…`, `+254712…`), and emails ignoring case.
+
+`db:seed` adds four sample upcoming events in development when there are none.
 
 ## Blog posts
 

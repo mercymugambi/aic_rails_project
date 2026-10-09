@@ -35,7 +35,10 @@ Rails.application.routes.draw do
           delete 'members/:member_id', action: :remove_member, as: :remove_member
         end
       end
-      resources :events, only: %i[index create]
+      # Events; RSVPs are nested under the event they belong to.
+      resources :events, only: %i[index show create update destroy] do
+        resources :registrations, only: %i[index create destroy], controller: 'event_registrations'
+      end
       resources :gallery_images, only: %i[index create update destroy]
 
       # Blog. show takes the post's slug as :id; update and destroy take the numeric id.

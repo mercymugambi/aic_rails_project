@@ -1,4 +1,6 @@
 class BlogPost < ApplicationRecord
+  include CoverImage
+
   # The frontend has the same list.
   CATEGORIES = ['Faith & Devotion', 'Church Life', 'Youth', 'Family', 'Outreach', 'Testimonies'].freeze
   STATUSES = %w[published draft].freeze
@@ -10,17 +12,12 @@ class BlogPost < ApplicationRecord
   belongs_to :created_by, class_name: 'User', optional: true
   # Photos inside the body (see BlogPostImage). Destroying a post deletes them and their files.
   has_many :body_images, class_name: 'BlogPostImage', dependent: :destroy, inverse_of: :blog_post
-  # Purged synchronously after commit instead (see purge_blob), as in GalleryImage.
-  has_one_attached :cover_image, dependent: false
 
   before_validation :normalize_fields
   before_validation :assign_slug
   before_save :unfeature_other_posts, if: -> { featured? && will_save_change_to_featured? }
-  before_save :remember_replaced_cover
   after_save :attach_body_images, if: :saved_change_to_body?
-  before_destroy :remember_cover_blob
-  after_commit :purge_unused_files, on: %i[create update]
-  after_destroy_commit :purge_cover
+  after_commit :purge_unused_body_images, on: %i[create update]
 
   validates :title, presence: true, length: { maximum: 150 }
   validates :slug, presence: true, length: { maximum: MAX_SLUG_LENGTH }, uniqueness: true,
@@ -33,7 +30,6 @@ class BlogPost < ApplicationRecord
   # A draft only needs a title.
   validates :excerpt, :category, :published_on, presence: true, if: :published?
   validate :body_is_valid
-  validate :cover_image_is_acceptable
 
   scope :published, -> { where(status: 'published') }
   scope :newest_first, -> { order(published_on: :desc, created_at: :desc, id: :desc) }
@@ -54,18 +50,6 @@ class BlogPost < ApplicationRecord
 
   def read_minutes
     [(BlogPostBody.word_count(body) / WORDS_PER_MINUTE.to_f).round, 1].max
-  end
-
-  # Validates, uploads a new cover image, then saves. Uploading first means a storage failure leaves no
-  # half-saved post; if the save itself fails the uploaded file is deleted again.
-  def save_with_uploads
-    return false unless valid?
-
-    uploaded = upload_new_cover
-    save.tap { |saved| uploaded&.purge unless saved }
-  rescue StandardError
-    uploaded&.purge
-    raise
   end
 
   private
@@ -131,37 +115,9 @@ class BlogPost < ApplicationRecord
     errors.add(:base, BlogPostBody::PHOTO_ERROR)
   end
 
-  def cover_image_is_acceptable
-    return unless cover_image.attached?
-
-    blob = cover_image.blob
-    unless BlogPostImage::IMAGE_TYPES.include?(blob.content_type)
-      errors.add(:base, 'Cover image must be a JPG, PNG or WEBP file')
-    end
-    errors.add(:base, 'Cover image must be 10 MB or smaller') if blob.byte_size > BlogPostImage::MAX_IMAGE_SIZE
-  end
-
-  def upload_new_cover
-    change = attachment_changes['cover_image']
-    return unless change.is_a?(ActiveStorage::Attached::Changes::CreateOne) && !change.blob.persisted?
-
-    change.upload
-    change.blob.save!
-    # Attaching the stored blob (not the file) stops Active Storage uploading it a second time.
-    self.cover_image = change.blob
-    change.blob
-  end
-
   # Only one post is featured; the unique index enforces it.
   def unfeature_other_posts
     self.class.where(featured: true).where.not(id: id).update_all(featured: false, updated_at: Time.current)
-  end
-
-  def remember_replaced_cover
-    return unless attachment_changes.key?('cover_image')
-
-    old_blob = cover_image_attachment&.blob
-    @replaced_cover_blob = old_blob unless old_blob == attachment_changes['cover_image'].try(:blob)
   end
 
   # Claims the body's photos for this post. Validation already checked them; this guards against
@@ -179,28 +135,12 @@ class BlogPost < ApplicationRecord
     raise ActiveRecord::RecordInvalid, self
   end
 
-  # Deletes the replaced or removed cover, and photos no longer used in the body.
-  def purge_unused_files
-    purge_blob(@replaced_cover_blob)
-    @replaced_cover_blob = nil
+  # Deletes photos no longer used in the body.
+  def purge_unused_body_images
     return unless @check_unused_images
 
     @check_unused_images = false
     body_images.where.not(token: BlogPostBody.image_ids(body)).destroy_all
     body_images.reset
-  end
-
-  def remember_cover_blob
-    @replaced_cover_blob = cover_image.blob if cover_image.attached?
-  end
-
-  def purge_cover
-    purge_blob(@replaced_cover_blob)
-  end
-
-  def purge_blob(blob)
-    blob&.purge
-  rescue StandardError => e
-    Rails.logger.error("Blog post #{id}: could not delete file #{blob.key} from storage: #{e.message}")
   end
 end

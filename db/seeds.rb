@@ -41,3 +41,27 @@ super_admin.password = 'admin@kabukuaic'
 super_admin.super_admin = true
 super_admin.save!
 puts "Super admin user: #{super_admin.email}"
+
+# --- Sample events (development only, and only when there are none) ---
+if Rails.env.development? && Event.none?
+  today = Event::TIME_ZONE.today
+  samples = [
+    { title: 'Night of Prayer', category: 'Prayer', date: today + 5, end_date: today + 6,
+      start_time: '21:00', end_time: '05:00', location: 'Main Sanctuary & Prayer Hall', featured: true,
+      description: 'An overnight vigil of worship, prayer and the Word. Come for an hour or stay the night.' },
+    { title: 'Couples & Family Marriage Seminar', category: 'Worship & Services', date: today + 8,
+      start_time: '14:00', end_time: '17:30', location: 'Sanctuary Fellowship Hall',
+      speaker: 'Elder Samuel & Mary Karanja', speaker_role: 'Family Life Mentors',
+      audience: 'Engaged and married couples', registration: 'rsvp', capacity: 80,
+      description: 'An afternoon of teaching and honest conversation about building a Christ-centred home.' },
+    { title: 'Kabuku Town Outreach', category: 'Outreach', date: today + 14, start_time: '10:00',
+      end_time: '15:00', location: 'Kabuku Town Grounds',
+      description: 'Sharing the Gospel, free medical checks and a meal with our neighbours.' },
+    { title: 'Youth Conference', category: 'Youth', date: today + 20, end_date: today + 22, start_time: '09:00',
+      end_time: '16:00', location: 'Youth Fellowship Center', audience: 'Ages 13 to 25',
+      registration: 'external', registration_url: 'https://example.com/aic-kabuku-youth-conference',
+      description: 'Three days of worship, teaching and fellowship for young people.' }
+  ]
+  samples.each { |attributes| Event.create!(attributes.merge(created_by: super_admin)) }
+  puts "Seeded #{samples.size} sample events"
+end

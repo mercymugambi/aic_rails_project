@@ -36,3 +36,9 @@ en:
       blog_post:
         body: "Content"
         published_on: "Publish date"
+      event:
+        end_date: "Last day"
+        registration_url: "Registration link"
+      event_registration:
+        phone: "Phone number"
+        email: "Email address"
