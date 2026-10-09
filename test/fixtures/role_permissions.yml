@@ -29,3 +29,7 @@ blog_editor_manage_blog:
 events_manager_manage_events:
   role: events_manager
   permission: manage_events
+
+settings_manager_manage_settings:
+  role: settings_manager
+  permission: manage_settings

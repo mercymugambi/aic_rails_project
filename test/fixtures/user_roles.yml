@@ -42,3 +42,8 @@ events_manager_is_events_manager:
   user: events_manager
   role: events_manager
   assigned_by: super_admin
+
+settings_manager_is_settings_manager:
+  user: settings_manager
+  role: settings_manager
+  assigned_by: super_admin

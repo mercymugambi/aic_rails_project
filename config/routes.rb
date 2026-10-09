@@ -44,6 +44,9 @@ Rails.application.routes.draw do
       # Blog. show takes the post's slug as :id; update and destroy take the numeric id.
       resources :blog_posts, only: %i[index show create update destroy]
       resources :blog_post_images, only: %i[create]
+
+      # Settings shown across the public website: one document, no id.
+      resource :site_settings, only: %i[show update]
     end
   end
 end

@@ -25,3 +25,7 @@ manage_gallery:
 manage_blog:
   name: manage_blog
   description: Write, publish and manage blog posts
+
+manage_settings:
+  name: manage_settings
+  description: Manage church settings and configuration

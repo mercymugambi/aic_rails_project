@@ -93,6 +93,8 @@ The API is available at http://localhost:3000. CORS allows a frontend on port 30
 | PATCH | `/api/v1/blog_posts/:id` | Partial update, multipart or JSON (only the keys sent change); `remove_cover_image=true` deletes the cover | `manage_blog` |
 | DELETE | `/api/v1/blog_posts/:id` | Delete a post, its cover and the photos in its body | `manage_blog` |
 | POST | `/api/v1/blog_post_images` | Upload a photo for a post's body (`blog_post_image[image]`); returns `{ id, url }`, and the body's image block refers to it by `image_id` | `manage_blog` |
+| GET | `/api/v1/site_settings` | The website settings document (notice bar, SEO, contact, social links, service times), unwrapped; `{}` until saved | Public |
+| PATCH | `/api/v1/site_settings` | Save settings (`{ "site_settings": {...} }`, JSON); each section sent replaces the stored one, others are kept; answers with the whole document | `manage_settings` |
 | POST | `/api/v1/payment` | Start an M-Pesa STK Push | Public |
 | POST | `/api/v1/callback` | M-Pesa result callback | Public (Safaricom) |
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_09_090100) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_09_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -215,6 +215,15 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_09_090100) do
     t.index ["name"], name: "index_roles_on_name", unique: true
   end
 
+  create_table "site_settings", force: :cascade do |t|
+    t.jsonb "data", default: {}, null: false
+    t.bigint "updated_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "(true)", name: "index_site_settings_singleton", unique: true
+    t.index ["updated_by_id"], name: "index_site_settings_on_updated_by_id"
+  end
+
   create_table "user_roles", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "role_id", null: false
@@ -257,6 +266,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_09_090100) do
   add_foreign_key "gallery_images", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"
+  add_foreign_key "site_settings", "users", column: "updated_by_id", on_delete: :nullify
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
   add_foreign_key "user_roles", "users", column: "assigned_by_id"

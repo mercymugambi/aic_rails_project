@@ -61,3 +61,10 @@ events_manager:
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
   jti: fixture-events_manager-jti
   super_admin: false
+
+# manage_settings only.
+settings_manager:
+  email: settingsmanager@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-settings_manager-jti
+  super_admin: false

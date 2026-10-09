@@ -25,3 +25,7 @@ blog_editor:
 events_manager:
   name: events_manager
   description: Plans and publishes events
+
+settings_manager:
+  name: settings_manager
+  description: Looks after the website settings
