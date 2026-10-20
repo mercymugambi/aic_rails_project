@@ -35,13 +35,8 @@
 /config/master.key
 
 node_modules/
-<<<<<<< HEAD
 
 # Local environment variables and credentials.
 .env
 .env.*
 !.env.example
-=======
-.env
-.env.local  
->>>>>>> 905f6ad (Pastrol Calender bookings)
