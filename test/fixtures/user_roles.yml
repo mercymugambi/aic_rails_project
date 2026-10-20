@@ -47,3 +47,8 @@ settings_manager_is_settings_manager:
   user: settings_manager
   role: settings_manager
   assigned_by: super_admin
+
+reports_viewer_is_reports_viewer:
+  user: reports_viewer
+  role: reports_viewer
+  assigned_by: super_admin

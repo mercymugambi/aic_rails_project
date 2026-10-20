@@ -1,13 +1,14 @@
 module Api
   module V1
     # Church members. Every action requires login and the manage_members permission, except the
-    # list, which fellowship-group managers can also read so they can pick members for a group.
+    # list, which fellowship-group managers can also read so they can pick members for a group, and
+    # view_reports can read because the Reports page builds its reports from it.
     class MembersController < ApplicationController
       MAX_BULK_DESTROY = 500
 
       skip_before_action :verify_authenticity_token
       before_action :authenticate_user!
-      before_action -> { authorize!(:manage_members, :manage_fellowship_groups) }, only: :index
+      before_action -> { authorize!(:manage_members, :manage_fellowship_groups, :view_reports) }, only: :index
       before_action -> { authorize!(:manage_members) }, except: :index
       before_action :set_member, only: %i[show update destroy]
 

@@ -36,6 +36,35 @@ class Api::V1::MembersControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test 'view_reports can read the member list, with the same JSON, and nothing else' do
+    viewer = auth_headers(users(:reports_viewer)) # view_reports only
+    peter = members(:peter)
+    get '/api/v1/members', headers: auth_headers(@secretary), as: :json
+    expected = response.parsed_body
+
+    get '/api/v1/members', headers: viewer, as: :json
+    assert_response :ok
+    assert_equal expected, response.parsed_body
+
+    get "/api/v1/members/#{peter.id}", headers: viewer, as: :json
+    assert_response :forbidden
+
+    assert_no_difference -> { Member.count } do
+      post '/api/v1/members', headers: viewer, as: :json, params: { member: valid_attributes }
+      assert_response :forbidden
+
+      patch "/api/v1/members/#{peter.id}", headers: viewer, as: :json, params: { member: { first_name: 'X' } }
+      assert_response :forbidden
+
+      delete "/api/v1/members/#{peter.id}", headers: viewer, as: :json
+      assert_response :forbidden
+
+      post '/api/v1/members/bulk_destroy', headers: viewer, as: :json, params: { ids: [peter.id] }
+      assert_response :forbidden
+    end
+    assert_equal 'Peter', peter.reload.first_name
+  end
+
   # --- GET /members and /members/:id ---
 
   test 'index returns every member ordered by first and last name' do

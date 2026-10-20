@@ -68,3 +68,10 @@ settings_manager:
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
   jti: fixture-settings_manager-jti
   super_admin: false
+
+# view_reports only.
+reports_viewer:
+  email: reportsviewer@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  jti: fixture-reports_viewer-jti
+  super_admin: false

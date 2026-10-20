@@ -2,13 +2,14 @@ module Api
   module V1
     # Fellowship groups and their membership.
     # Reading groups and managing who is in them is open to manage_fellowship_groups or manage_members
-    # (the Members page needs the group list); creating, editing and deleting groups needs
-    # manage_fellowship_groups.
+    # (the Members page needs the group list). view_reports can also read the list, because the Reports
+    # page builds its rosters from it. Creating, editing and deleting groups needs manage_fellowship_groups.
     class FellowshipGroupsController < ApplicationController
       skip_before_action :verify_authenticity_token
       before_action :authenticate_user!
+      before_action -> { authorize!(:manage_fellowship_groups, :manage_members, :view_reports) }, only: :index
       before_action -> { authorize!(:manage_fellowship_groups, :manage_members) },
-                    only: %i[index show add_members remove_member]
+                    only: %i[show add_members remove_member]
       before_action -> { authorize!(:manage_fellowship_groups) }, only: %i[create update destroy]
       before_action :set_group, except: %i[index create]
 

@@ -29,3 +29,7 @@ events_manager:
 settings_manager:
   name: settings_manager
   description: Looks after the website settings
+
+reports_viewer:
+  name: reports_viewer
+  description: Reads reports but changes nothing

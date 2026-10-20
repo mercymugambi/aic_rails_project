@@ -86,6 +86,41 @@ class Api::V1::FellowshipGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test 'view_reports can read the group list, with the same JSON, and nothing else' do
+    viewer = auth_headers(users(:reports_viewer)) # view_reports only
+    get '/api/v1/fellowship_groups', headers: auth_headers(@group_manager), as: :json
+    expected = response.parsed_body
+
+    get '/api/v1/fellowship_groups', headers: viewer, as: :json
+    assert_response :ok
+    assert_equal expected, response.parsed_body
+
+    get "/api/v1/fellowship_groups/#{@choir.id}", headers: viewer, as: :json
+    assert_response :forbidden
+
+    # Peter is not in the choir; Grace is.
+    assert_no_difference [-> { FellowshipGroup.count }, -> { @choir.members.count }] do
+      post '/api/v1/fellowship_groups', headers: viewer, as: :json,
+                                        params: { fellowship_group: { group_name: 'Ushers' } }
+      assert_response :forbidden
+
+      patch "/api/v1/fellowship_groups/#{@choir.id}", headers: viewer, as: :json,
+                                                      params: { fellowship_group: { group_name: 'Choir 2' } }
+      assert_response :forbidden
+
+      delete "/api/v1/fellowship_groups/#{@choir.id}", headers: viewer, as: :json
+      assert_response :forbidden
+
+      post "/api/v1/fellowship_groups/#{@choir.id}/members", headers: viewer, as: :json,
+                                                             params: { member_ids: [members(:peter).id] }
+      assert_response :forbidden
+
+      delete "/api/v1/fellowship_groups/#{@choir.id}/members/#{members(:grace).id}", headers: viewer, as: :json
+      assert_response :forbidden
+    end
+    assert_equal 'Choir', @choir.reload.group_name
+  end
+
   test 'super admin is always allowed' do
     post '/api/v1/fellowship_groups', headers: auth_headers(@super_admin), as: :json,
                                       params: { fellowship_group: { group_name: 'Ushers' } }

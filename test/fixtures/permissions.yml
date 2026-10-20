@@ -29,3 +29,7 @@ manage_blog:
 manage_settings:
   name: manage_settings
   description: Manage church settings and configuration
+
+view_reports:
+  name: view_reports
+  description: View reports and analytics

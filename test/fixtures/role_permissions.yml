@@ -33,3 +33,7 @@ events_manager_manage_events:
 settings_manager_manage_settings:
   role: settings_manager
   permission: manage_settings
+
+reports_viewer_view_reports:
+  role: reports_viewer
+  permission: view_reports
