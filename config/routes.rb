@@ -47,6 +47,12 @@ Rails.application.routes.draw do
 
       # Settings shown across the public website: one document, no id.
       resource :site_settings, only: %i[show update]
+
+      # Pastor appointment bookings
+      resources :appointments, only: [:create] do
+        collection { get :booked_slots }
+        member { get :request_reschedule }
+      end
     end
   end
 end

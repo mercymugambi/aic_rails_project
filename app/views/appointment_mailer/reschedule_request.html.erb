@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html>
+<body style="font-family:sans-serif;background:#f8f9fa;padding:24px;margin:0;">
+  <div style="max-width:540px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:#92400e;padding:28px 32px;">
+      <h1 style="color:#fff;margin:0;font-size:22px;">Reschedule Requested</h1>
+      <p style="color:#fde68a;margin:4px 0 0;font-size:13px;">AIC Kabuku Church</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <h2 style="color:#1e293b;margin-top:0;">Hi <%= @appointment.name %>,</h2>
+      <p style="font-size:14px;color:#475569;">
+        The pastor has requested to reschedule your appointment originally booked for:
+      </p>
+      <div style="background:#fef3c7;border-radius:12px;padding:16px 20px;margin:16px 0;">
+        <strong style="color:#92400e;font-size:14px;">
+          <%= @appointment.appointment_date.strftime('%A, %B %d, %Y') %> at <%= @appointment.appointment_time %>
+        </strong>
+        <% if @appointment.reschedule_note.present? %>
+        <p style="font-size:13px;color:#78350f;margin:8px 0 0;"><em>"<%= @appointment.reschedule_note %>"</em></p>
+        <% end %>
+      </div>
+      <p style="font-size:13px;color:#64748b;">
+        Please visit our website to book a new time that works for you.
+      </p>
+      <p style="font-size:13px;color:#64748b;">
+        We apologise for the inconvenience.<br><strong style="color:#b91c1c;">AIC Kabuku Church</strong>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

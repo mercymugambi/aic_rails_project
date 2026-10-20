@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<body style="font-family:sans-serif;background:#f8f9fa;padding:24px;margin:0;">
+  <div style="max-width:540px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:#b91c1c;padding:28px 32px;">
+      <h1 style="color:#fff;margin:0;font-size:22px;">AIC Kabuku Church</h1>
+      <p style="color:#fca5a5;margin:4px 0 0;font-size:13px;">Appointment Confirmation</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <h2 style="color:#1e293b;margin-top:0;">Hi <%= @appointment.name %>, your appointment is confirmed! ✅</h2>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;width:140px;">Date</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.appointment_date.strftime('%A, %B %d, %Y') %></td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;">Time</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.appointment_time %></td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;">Purpose</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.purpose %></td></tr>
+        <% if @appointment.notes.present? %>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;vertical-align:top;">Notes</td>
+            <td style="padding:8px 0;color:#1e293b;font-size:14px;"><%= @appointment.notes %></td></tr>
+        <% end %>
+      </table>
+      <p style="font-size:13px;color:#64748b;margin-top:24px;">
+        You will receive a message if the pastor needs to reschedule. Please arrive 5 minutes early.
+      </p>
+      <p style="font-size:13px;color:#64748b;">
+        God bless you,<br><strong style="color:#b91c1c;">AIC Kabuku Church</strong>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

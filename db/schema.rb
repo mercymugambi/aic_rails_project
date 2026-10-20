@@ -10,6 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema[7.0].define(version: 2026_10_09_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,6 +74,26 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_09_120000) do
     t.index ["featured"], name: "index_blog_posts_on_single_featured", unique: true, where: "featured"
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
     t.index ["status", "published_on"], name: "index_blog_posts_on_status_and_published_on"
+=======
+ActiveRecord::Schema[7.0].define(version: 2026_10_20_152842) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "appointments", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "phone"
+    t.string "purpose"
+    t.text "notes"
+    t.date "appointment_date"
+    t.string "appointment_time"
+    t.string "status"
+    t.string "token"
+    t.text "reschedule_note"
+    t.string "pastor_email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+>>>>>>> 905f6ad (Pastrol Calender bookings)
   end
 
   create_table "devotions", force: :cascade do |t|
