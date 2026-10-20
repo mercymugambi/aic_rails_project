@@ -41,9 +41,13 @@ Rails.application.routes.draw do
       end
       resources :gallery_images, only: %i[index create update destroy]
 
-      # Blog. show takes the post's slug as :id; update and destroy take the numeric id.
-      resources :blog_posts, only: %i[index show create update destroy]
+      # Blog. show takes the post's slug as :id; update and destroy take the numeric id. Visitors' comments
+      # are nested under the post's slug; blog_comments is the moderation list.
+      resources :blog_posts, only: %i[index show create update destroy] do
+        resources :comments, only: %i[index create], controller: 'blog_post_comments'
+      end
       resources :blog_post_images, only: %i[create]
+      resources :blog_comments, only: %i[index update destroy]
 
       # Settings shown across the public website: one document, no id.
       resource :site_settings, only: %i[show update]

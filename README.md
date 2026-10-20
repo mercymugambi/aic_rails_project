@@ -86,13 +86,18 @@ The API is available at http://localhost:3000. CORS allows a frontend on port 30
 | POST | `/api/v1/gallery_images` | Upload one photo as multipart form data: `gallery_image[image]` (JPG, PNG or WEBP, max 10 MB), `gallery_image[title]`, `gallery_image[category]`, `gallery_image[taken_on]` | `manage_gallery` |
 | PATCH | `/api/v1/gallery_images/:id` | Edit `title`, `category`, `taken_on` (`{ "gallery_image": {...} }`; `null` clears category or date) | `manage_gallery` |
 | DELETE | `/api/v1/gallery_images/:id` | Delete a photo and its stored file | `manage_gallery` |
-| GET | `/api/v1/blog_posts` | Published posts as a plain array, newest `published_on` first, with absolute `cover_image_url` and `read_minutes` | Public |
-| GET | `/api/v1/blog_posts?status=all` | Same list including drafts | `manage_blog` |
+| GET | `/api/v1/blog_posts` | Published posts as a plain array, newest `published_on` first, with absolute `cover_image_url`, `read_minutes` and `comments_count` (approved comments) | Public |
+| GET | `/api/v1/blog_posts?status=all` | Same list including drafts, plus `pending_comments_count` | `manage_blog` |
 | GET | `/api/v1/blog_posts/:slug` | A published post, looked up by **slug** (404 for drafts) | Public |
 | POST | `/api/v1/blog_posts` | Create a post as multipart form data under `blog_post[...]`; `body` is a JSON string of blocks, `tags[]` repeated, optional `cover_image` (JPG, PNG or WEBP, max 10 MB) | `manage_blog` |
 | PATCH | `/api/v1/blog_posts/:id` | Partial update, multipart or JSON (only the keys sent change); `remove_cover_image=true` deletes the cover | `manage_blog` |
 | DELETE | `/api/v1/blog_posts/:id` | Delete a post, its cover and the photos in its body | `manage_blog` |
 | POST | `/api/v1/blog_post_images` | Upload a photo for a post's body (`blog_post_image[image]`); returns `{ id, url }`, and the body's image block refers to it by `image_id` | `manage_blog` |
+| GET | `/api/v1/blog_posts/:slug/comments` | Approved comments on a published post, oldest first, each with its `reply` (or `null`); never the email | Public |
+| POST | `/api/v1/blog_posts/:slug/comments` | Post a comment (`{ "comment": { "author_name", "author_email", "body" } }`); it waits for approval; at most 5 per connection per 10 minutes | Public |
+| GET | `/api/v1/blog_comments?status=pending\|approved\|hidden\|all&blog_post_id=` | Every comment, newest first, with the commenter's email and the post (drafts included) | `manage_blog` |
+| PATCH | `/api/v1/blog_comments/:id` | Change `status` and/or `reply_body` (`{ "blog_comment": {...} }`); a blank reply removes it | `manage_blog` |
+| DELETE | `/api/v1/blog_comments/:id` | Delete a comment | `manage_blog` |
 | GET | `/api/v1/site_settings` | The website settings document (notice bar, SEO, contact, social links, service times), unwrapped; `{}` until saved | Public |
 | PATCH | `/api/v1/site_settings` | Save settings (`{ "site_settings": {...} }`, JSON); each section sent replaces the stored one, others are kept; answers with the whole document | `manage_settings` |
 | POST | `/api/v1/payment` | Start an M-Pesa STK Push | Public |
@@ -117,6 +122,10 @@ Photos inside a post are uploaded first, while the writer is drafting, so some a
 ```powershell
 bundle exec rails blog:purge_orphan_images
 ```
+
+## Blog comments
+
+Visitors comment on published posts without logging in. A new comment is `pending` and appears on the website only after someone with `manage_blog` approves it; set `BlogComment::AUTO_APPROVE` to `true` to show comments straight away. Moderators can also hide a comment, delete it, or add one public reply, which is signed with their first and last name (or "AIC Kabuku" if they have none). Commenters' emails and IP addresses are only ever shown to moderators. Deleting a post deletes its comments.
 
 ## Cloudinary setup (gallery and blog photos)
 

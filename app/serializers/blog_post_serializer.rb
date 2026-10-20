@@ -1,7 +1,7 @@
 # JSON shape of a post returned by the Blog API.
 #
-# Use BlogPost.with_attached_cover_image.includes(body_images: { image_attachment: :blob }) when
-# serializing many posts to avoid N+1 queries.
+# Use BlogPost.with_attached_cover_image.includes(body_images: { image_attachment: :blob }), and pass
+# comment_counts: BlogComment.counts_for(ids), when serializing many posts to avoid N+1 queries.
 class BlogPostSerializer
   # Absolute URL a browser can load directly, as in GalleryImageSerializer#image_url: Cloudinary's
   # public https URL (f_auto,q_auto), or the Active Storage redirect URL for locally stored files.
@@ -15,12 +15,15 @@ class BlogPostSerializer
     end
   end
 
-  def initialize(post)
+  # pending_comments: also add pending_comments_count, for the moderation listing only.
+  def initialize(post, comment_counts: nil, pending_comments: false)
     @post = post
+    @comment_counts = comment_counts
+    @pending_comments = pending_comments
   end
 
   def as_json(*)
-    {
+    json = {
       id: post.id,
       slug: post.slug,
       title: post.title,
@@ -35,14 +38,22 @@ class BlogPostSerializer
       author_role: post.author_role,
       cover_image_url: self.class.image_url(post.cover_image),
       read_minutes: post.read_minutes,
+      comments_count: comments_count('approved'),
       created_at: post.created_at,
       updated_at: post.updated_at
     }
+    json[:pending_comments_count] = comments_count('pending') if @pending_comments
+    json
   end
 
   private
 
   attr_reader :post
+
+  def comments_count(status)
+    @comment_counts ||= BlogComment.counts_for(post.id)
+    @comment_counts.fetch([post.id, status], 0)
+  end
 
   # Image blocks get their url rebuilt from image_id on every read; no stored url is trusted.
   def body

@@ -3,7 +3,7 @@ require 'minitest/mock'
 
 class Api::V1::BlogPostsControllerTest < ActionDispatch::IntegrationTest
   ITEM_KEYS = %w[id slug title excerpt body category tags status featured published_on author_name author_role
-                 cover_image_url read_minutes created_at updated_at].freeze
+                 cover_image_url read_minutes comments_count created_at updated_at].freeze
   BODY = [{ 'type' => 'paragraph', 'text' => 'Be strong and courageous.' }].freeze
 
   setup do
@@ -37,7 +37,8 @@ class Api::V1::BlogPostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal({ 'id' => post.id, 'slug' => 'hope', 'title' => 'Hope', 'excerpt' => 'A word of hope.',
                    'category' => 'Youth', 'tags' => ['Hope'], 'status' => 'published', 'featured' => false,
                    'published_on' => '2026-08-04', 'author_name' => 'Pst. Jane', 'author_role' => 'Youth Pastor',
-                   'cover_image_url' => nil, 'read_minutes' => 4 }, item.except('body', 'created_at', 'updated_at'))
+                   'cover_image_url' => nil, 'read_minutes' => 4, 'comments_count' => 0 },
+                 item.except('body', 'created_at', 'updated_at'))
   end
 
   test 'status=all includes drafts for manage_blog' do
@@ -59,14 +60,33 @@ class Api::V1::BlogPostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal({ 'error' => 'You do not have permission to perform this action' }, response.parsed_body)
   end
 
-  test 'index loads covers and body photos without N+1 queries' do
-    create_post(cover: true, body: [image_block(upload_image)])
+  test 'index loads covers, body photos and comment counts without N+1 queries' do
+    add_comment(create_post(cover: true, body: [image_block(upload_image)]), 'approved')
     one_post = count_queries { get '/api/v1/blog_posts', as: :json }
-    3.times { create_post(cover: true, body: [image_block(upload_image)]) }
+    3.times { add_comment(create_post(cover: true, body: [image_block(upload_image)]), 'approved') }
     four_posts = count_queries { get '/api/v1/blog_posts', as: :json }
 
     assert_equal 4, response.parsed_body.size
     assert_equal one_post, four_posts
+  end
+
+  test 'comments_count counts approved comments; pending_comments_count is only in the admin listing' do
+    blog_post = create_post(title: 'Walking in faith')
+    quiet = create_post(title: 'Quiet', published_on: '2026-01-01')
+    %w[approved approved pending hidden].each { |status| add_comment(blog_post, status) }
+
+    get '/api/v1/blog_posts', as: :json
+    assert_equal [2, 0], response.parsed_body.pluck('comments_count')
+    assert(response.parsed_body.none? { |item| item.key?('pending_comments_count') })
+
+    get '/api/v1/blog_posts/walking-in-faith', as: :json
+    assert_equal ITEM_KEYS, response.parsed_body.keys
+    assert_equal 2, response.parsed_body['comments_count']
+
+    get '/api/v1/blog_posts', params: { status: 'all' }, headers: auth_headers(@editor)
+    counts = response.parsed_body.map { |item| item.values_at('id', 'comments_count', 'pending_comments_count') }
+    assert_equal [[blog_post.id, 2, 1], [quiet.id, 0, 0]], counts
+    assert_equal [*ITEM_KEYS, 'pending_comments_count'], response.parsed_body.first.keys
   end
 
   # --- Show ---
@@ -311,6 +331,20 @@ class Api::V1::BlogPostsControllerTest < ActionDispatch::IntegrationTest
     keys.each { |key| assert_not ActiveStorage::Blob.service.exist?(key) }
   end
 
+  test 'destroy deletes the post’s comments' do
+    blog_post = create_post
+    other = create_post(title: 'Other')
+    %w[approved pending].each { |status| add_comment(blog_post, status) }
+    kept = add_comment(other, 'approved')
+
+    assert_difference -> { BlogComment.count } => -2 do
+      delete "/api/v1/blog_posts/#{blog_post.id}", headers: auth_headers(@editor), as: :json
+    end
+
+    assert_response :ok
+    assert_equal [kept.id], BlogComment.ids
+  end
+
   test 'unknown post id returns 404' do
     patch '/api/v1/blog_posts/999999', headers: auth_headers(@editor), as: :json,
                                        params: { blog_post: { title: 'X' } }
@@ -389,6 +423,10 @@ class Api::V1::BlogPostsControllerTest < ActionDispatch::IntegrationTest
 
   def image_block(image)
     { 'type' => 'image', 'image_id' => image.token }
+  end
+
+  def add_comment(blog_post, status)
+    blog_post.comments.create!(author_name: 'Grace', body: 'Amen', status: status)
   end
 
   def count_queries(&)

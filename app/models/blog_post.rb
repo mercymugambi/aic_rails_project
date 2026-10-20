@@ -12,6 +12,8 @@ class BlogPost < ApplicationRecord
   belongs_to :created_by, class_name: 'User', optional: true
   # Photos inside the body (see BlogPostImage). Destroying a post deletes them and their files.
   has_many :body_images, class_name: 'BlogPostImage', dependent: :destroy, inverse_of: :blog_post
+  # Visitors' comments (see BlogComment). Deleting a post deletes them.
+  has_many :comments, class_name: 'BlogComment', dependent: :delete_all, inverse_of: :blog_post
 
   before_validation :normalize_fields
   before_validation :assign_slug

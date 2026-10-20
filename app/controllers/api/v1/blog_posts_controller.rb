@@ -20,11 +20,13 @@ module Api
       end
 
       # GET /api/v1/blog_posts            published posts, newest first
-      # GET /api/v1/blog_posts?status=all drafts too (manage_blog)
+      # GET /api/v1/blog_posts?status=all drafts too, with pending_comments_count (manage_blog)
       def index
+        all_statuses = params[:status] == 'all'
         posts = BlogPost.with_attached_cover_image.includes(body_images: { image_attachment: :blob }).newest_first
-        posts = posts.published unless params[:status] == 'all'
-        render json: posts.map { |post| serialize(post) }
+        posts = (all_statuses ? posts : posts.published).to_a
+        counts = BlogComment.counts_for(posts.map(&:id))
+        render json: posts.map { |post| serialize(post, comment_counts: counts, pending_comments: all_statuses) }
       end
 
       # GET /api/v1/blog_posts/:slug
@@ -103,8 +105,8 @@ module Api
         ActiveModel::Type::Boolean.new.cast(params.require(:blog_post)[:remove_cover_image]) == true
       end
 
-      def serialize(post)
-        BlogPostSerializer.new(post).as_json
+      def serialize(post, **)
+        BlogPostSerializer.new(post, **).as_json
       end
     end
   end

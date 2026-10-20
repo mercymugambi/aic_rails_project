@@ -58,6 +58,24 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_20_152842) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "blog_comments", force: :cascade do |t|
+    t.bigint "blog_post_id", null: false
+    t.string "author_name", limit: 80, null: false
+    t.string "author_email", limit: 254
+    t.text "body", null: false
+    t.string "status", default: "pending", null: false
+    t.text "reply_body"
+    t.string "reply_author_name"
+    t.datetime "replied_at"
+    t.bigint "replied_by_id"
+    t.string "ip_address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blog_post_id", "status", "created_at"], name: "index_blog_comments_on_blog_post_id_and_status_and_created_at"
+    t.index ["replied_by_id"], name: "index_blog_comments_on_replied_by_id"
+    t.index ["status"], name: "index_blog_comments_on_status"
+  end
+
   create_table "blog_post_images", force: :cascade do |t|
     t.string "token", null: false
     t.bigint "blog_post_id"
@@ -271,6 +289,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_20_152842) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "blog_comments", "blog_posts", on_delete: :cascade
+  add_foreign_key "blog_comments", "users", column: "replied_by_id", on_delete: :nullify
   add_foreign_key "blog_post_images", "blog_posts", on_delete: :nullify
   add_foreign_key "blog_post_images", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "blog_posts", "users", column: "created_by_id", on_delete: :nullify
