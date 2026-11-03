@@ -1,0 +1,13 @@
+grace_at_youth_camp:
+  event: youth_camp
+  name: Grace Wanjiru
+  phone: 0712 345 678
+  phone_key: '254712345678'
+  seats: 2
+
+peter_at_youth_camp:
+  event: youth_camp
+  name: Peter Otieno
+  email: Peter@Example.com
+  email_key: peter@example.com
+  seats: 1

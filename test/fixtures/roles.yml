@@ -1,0 +1,35 @@
+church_admin:
+  name: church_admin
+  description: Church Administrator
+
+treasurer:
+  name: treasurer
+  description: Handles church finances
+
+secretary:
+  name: secretary
+  description: Keeps the membership register
+
+group_manager:
+  name: group_manager
+  description: Runs the fellowship groups
+
+gallery_manager:
+  name: gallery_manager
+  description: Looks after the photo gallery
+
+blog_editor:
+  name: blog_editor
+  description: Writes and publishes blog posts
+
+events_manager:
+  name: events_manager
+  description: Plans and publishes events
+
+settings_manager:
+  name: settings_manager
+  description: Looks after the website settings
+
+reports_viewer:
+  name: reports_viewer
+  description: Reads reports but changes nothing

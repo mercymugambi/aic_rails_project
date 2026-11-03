@@ -1,15 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  image: MyString
-  title: MyString
-  description: MyText
-  date: 2023-10-11
-  created_by: one
-
-two:
-  image: MyString
-  title: MyString
-  description: MyText
-  date: 2023-10-11
-  created_by: two
+# Dates are relative to today so the event stays upcoming. Its counters match event_registrations.yml.
+youth_camp:
+  title: Youth camp
+  category: Youth
+  status: published
+  description: Annual youth camp
+  date: <%= 30.days.from_now.to_date %>
+  start_time: '09:00'
+  end_time: '16:00'
+  location: Youth Fellowship Center
+  registration: rsvp
+  capacity: 50
+  registrations_count: 2
+  seats_taken: 3
+  created_by: super_admin

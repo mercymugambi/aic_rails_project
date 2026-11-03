@@ -1,19 +1,21 @@
 default: &default
   adapter: postgresql
-  encoding: unicode
+  encoding: UTF8
+  host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  sslmode: disable
+  gssencmode: disable
+  username: <%= ENV.fetch("DATABASE_USERNAME", "postgres") %>
+  password: <%= ENV["DATABASE_PASSWORD"].inspect %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
   <<: *default
-  database: aic_backed_app
-  username: postgres
-  password: ?Shanice123
+  database: <%= ENV.fetch("DATABASE_NAME", "aic_backed_app") %>
 
 test:
   <<: *default
-  database: aic_backed_app_test
-  username: postgres
-  password: ?Shanice123
+  database: <%= ENV.fetch("DATABASE_TEST_NAME", "aic_backed_app_test") %>
 
 production:
   <<: *default

@@ -1,4 +1,3 @@
-# app/controllers/api/v1/roles_controller.rb
 module Api
   module V1
     class RolesController < ApplicationController
@@ -9,7 +8,7 @@ module Api
       # GET /api/v1/roles
       def index
         @roles = Role.includes(:permissions).all
-        render json: @roles.as_json(include: { permissions: { only: [:id, :name, :description] } })
+        render json: @roles.as_json(include: { permissions: { only: %i[id name description] } })
       end
 
       # POST /api/v1/roles

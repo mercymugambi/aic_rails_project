@@ -33,8 +33,12 @@ Rails.application.configure do
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
 
-  # Store uploaded files on the local file system in a temporary directory.
+  # Store uploaded files on the local file system in a temporary directory. Never Cloudinary, even if
+  # CLOUDINARY_URL is set in .env.
   config.active_storage.service = :test
+
+  # Host for absolute URLs built outside a request (matches the integration test host).
+  Rails.application.routes.default_url_options = { host: 'www.example.com' }
 
   config.action_mailer.perform_caching = false
 

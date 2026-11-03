@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<body style="font-family:sans-serif;background:#f8f9fa;padding:24px;margin:0;">
+  <div style="max-width:540px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:#b91c1c;padding:28px 32px;">
+      <h1 style="color:#fff;margin:0;font-size:22px;">New Appointment Request</h1>
+      <p style="color:#fca5a5;margin:4px 0 0;font-size:13px;">AIC Kabuku Church — Admin Notification</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <h2 style="color:#1e293b;margin-top:0;">📅 Someone wants to see you</h2>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;width:140px;">Name</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.name %></td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;">Email</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.email %></td></tr>
+        <% if @appointment.phone.present? %>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;">Phone</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.phone %></td></tr>
+        <% end %>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;">Date</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.appointment_date.strftime('%A, %B %d, %Y') %></td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;">Time</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.appointment_time %></td></tr>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;">Purpose</td>
+            <td style="padding:8px 0;font-weight:600;color:#1e293b;font-size:14px;"><%= @appointment.purpose %></td></tr>
+        <% if @appointment.notes.present? %>
+        <tr><td style="padding:8px 0;color:#64748b;font-size:14px;vertical-align:top;">Notes</td>
+            <td style="padding:8px 0;color:#1e293b;font-size:14px;"><%= @appointment.notes %></td></tr>
+        <% end %>
+      </table>
+
+      <p style="font-size:13px;color:#64748b;margin-top:8px;">If this time does not work for you, click the button below to request rescheduling:</p>
+      <a href="<%= @reschedule_url %>"
+         style="display:inline-block;margin-top:8px;background:#b91c1c;color:#fff;text-decoration:none;padding:12px 28px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:0.05em;">
+        Request Reschedule
+      </a>
+    </div>
+  </div>
+</body>
+</html>

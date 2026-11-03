@@ -1,0 +1,16 @@
+# Members: choir = Jane (leader) + Grace, youth = Grace, prayer = nobody (see members.yml).
+choir:
+  group_name: Choir
+  group_code: CHOIR
+  description: Leads worship every Sunday.
+  leader: jane
+  created_by: super_admin
+
+youth:
+  group_name: Youth
+  group_code: YOUTH
+  created_by: super_admin
+
+prayer:
+  group_name: Prayer Warriors
+  created_by: super_admin

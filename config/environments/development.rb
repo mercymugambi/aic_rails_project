@@ -27,8 +27,12 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files in Cloudinary when CLOUDINARY_URL is set (dotenv loads .env before this file),
+  # otherwise on the local file system (see config/storage.yml for options).
+  config.active_storage.service = ENV['CLOUDINARY_URL'].present? ? :cloudinary : :local
+
+  # Host for absolute URLs built outside a request, e.g. local gallery image_url values.
+  Rails.application.routes.default_url_options = { protocol: 'http', host: 'localhost', port: 3000 }
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
@@ -53,21 +57,29 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  # Avoid Windows file-lock conflicts in Sprockets' temporary asset cache.
+  config.assets.configure do |environment|
+    environment.cache = Sprockets::Cache::NullStore.new
+  end
 
-#   config.action_mailer.delivery_method = :smtp
-#   config.action_mailer.smtp_settings = {
-#   address: 'smtp.gmail.com',
-#   port: 587,
-#   domain: 'your-domain.com',
-#   user_name: 'mercymugambi2016@gmail.com',
-#   authentication: 'plain',
-#   enable_starttls_auto: true
-# }
+  # Default URL host for links in Devise emails (password reset, confirmation).
+  config.action_mailer.default_url_options = { host: 'localhost:3000' }
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.gmail.com',
+    port: 587,
+    domain: 'gmail.com',
+    user_name: ENV['GMAIL_USERNAME'],
+    password: ENV['GMAIL_APP_PASSWORD'],
+    authentication: 'plain',
+    enable_starttls_auto: true
+  }
 
+  # Set the default URL host for Devise confirmation emails.
+  config.action_mailer.default_url_options = { host: 'localhost:3000' }
+  # config.action_mailer.logger = ActiveSupport::Logger.new(STDOUT)
 
-# Set the default URL host for Devise confirmation emails.
-config.action_mailer.default_url_options = { host: 'localhost:3000' }
-# config.action_mailer.logger = ActiveSupport::Logger.new(STDOUT)
-
-
+  # Allow public tunnel domains (Cloudflare, ngrok, localtunnel) for M-PESA callbacks in development.
+  config.hosts.clear
 end
