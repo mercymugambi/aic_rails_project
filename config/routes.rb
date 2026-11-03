@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       # M-Pesa payments
       post '/payment', to: 'payments#create'
+      get '/payment/verify', to: 'payments#verify'
+      get '/payment/status', to: 'payments#status'
       post '/callback', to: 'payments#callback'
 
       # Access control (RBAC)

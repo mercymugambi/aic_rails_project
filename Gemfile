@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.2.2'
+ruby '3.4.4'
 
 gem 'json', '< 3.0'
 gem 'rails', '~> 7.0.7'
@@ -42,6 +42,9 @@ gem 'rack-cors'
 
 # Gallery photo storage: Active Storage service "Cloudinary", configured by CLOUDINARY_URL
 gem 'cloudinary'
+
+# HTTP client for M-PESA Daraja API
+gem 'httparty'
 
 # Load environment variables from .env in development and test
 gem 'dotenv-rails', groups: %i[development test]
