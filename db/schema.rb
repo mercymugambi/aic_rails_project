@@ -1,4 +1,4 @@
-# This file is auto-generated from the current state of the database. Instead
+﻿# This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_20_152842) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_30_193535) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -221,6 +221,24 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_20_152842) do
     t.bigint "member_id"
     t.bigint "leadership_position_id"
     t.index ["member_id", "leadership_position_id"], name: "index_member_positions", unique: true
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.string "phone_number", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.string "transaction_id"
+    t.string "merchant_request_id"
+    t.string "checkout_request_id"
+    t.string "contribution_type", default: "donation", null: false
+    t.string "status", default: "pending", null: false
+    t.text "result_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "note"
+    t.index ["checkout_request_id"], name: "index_payments_on_checkout_request_id"
+    t.index ["contribution_type"], name: "index_payments_on_contribution_type"
+    t.index ["status"], name: "index_payments_on_status"
+    t.index ["transaction_id"], name: "index_payments_on_transaction_id", unique: true, where: "(transaction_id IS NOT NULL)"
   end
 
   create_table "permissions", force: :cascade do |t|
