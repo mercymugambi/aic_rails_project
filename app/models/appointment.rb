@@ -1,11 +1,11 @@
-﻿class Appointment < ApplicationRecord
+class Appointment < ApplicationRecord
   validates :name, :email, :appointment_date, :appointment_time, :purpose, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   before_create :generate_token
   before_create :set_default_status
 
-  scope :for_month, ->(year, month) {
+  scope :for_month, lambda { |year, month|
     where(appointment_date: Date.new(year.to_i, month.to_i, 1)..Date.new(year.to_i, month.to_i, -1))
       .where(status: %w[confirmed pending])
   }

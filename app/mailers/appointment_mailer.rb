@@ -1,12 +1,12 @@
-﻿class AppointmentMailer < ApplicationMailer
-  default from: ENV['GMAIL_USERNAME']
+class AppointmentMailer < ApplicationMailer
+  default from: ENV.fetch('GMAIL_USERNAME', nil)
 
   def confirmation(appointment)
     @appointment = appointment
-    @reschedule_url = "#{ENV['FRONTEND_URL']}/appointments/reschedule/#{appointment.token}"
+    @reschedule_url = "#{ENV.fetch('FRONTEND_URL', nil)}/appointments/reschedule/#{appointment.token}"
     mail(
       to: appointment.email,
-      subject: "✅ Appointment Confirmed — AIC Kabuku Church"
+      subject: '✅ Appointment Confirmed — AIC Kabuku Church'
     )
   end
 
@@ -23,7 +23,7 @@
     @appointment = appointment
     mail(
       to: appointment.email,
-      subject: "📅 Reschedule Request — AIC Kabuku Church"
+      subject: '📅 Reschedule Request — AIC Kabuku Church'
     )
   end
 end

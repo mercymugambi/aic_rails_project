@@ -1,4 +1,4 @@
-﻿module Api
+module Api
   module V1
     class AppointmentsController < ApplicationController
       skip_before_action :verify_authenticity_token
@@ -22,7 +22,8 @@
         ).exists?
 
         if conflict
-          return render json: { error: 'That time slot has just been booked. Please choose another.' }, status: :conflict
+          return render json: { error: 'That time slot has just been booked. Please choose another.' },
+                        status: :conflict
         end
 
         if appt.save
