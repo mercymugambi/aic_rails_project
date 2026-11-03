@@ -76,10 +76,10 @@ Rails.application.configure do
     enable_starttls_auto: true
   }
 
+  # Set the default URL host for Devise confirmation emails.
+  config.action_mailer.default_url_options = { host: 'localhost:3000' }
+  # config.action_mailer.logger = ActiveSupport::Logger.new(STDOUT)
 
-# Set the default URL host for Devise confirmation emails.
-config.action_mailer.default_url_options = { host: 'localhost:3000' }
-# config.action_mailer.logger = ActiveSupport::Logger.new(STDOUT)
-
-
+  # Allow public tunnel domains (Cloudflare, ngrok, localtunnel) for M-PESA callbacks in development.
+  config.hosts.clear
 end

@@ -122,7 +122,7 @@ module Api
       end
 
       def parse_callback_payload
-        JSON.parse(request.body.read)
+        JSON.parse(request.raw_post.presence || request.body.read)
       rescue JSON::ParserError
         params.to_unsafe_h.deep_stringify_keys
       end
