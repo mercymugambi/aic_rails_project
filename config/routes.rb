@@ -13,16 +13,24 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       # M-Pesa payments
+      get '/payments', to: 'payments#index'
       post '/payment', to: 'payments#create'
       get '/payment/verify', to: 'payments#verify'
       get '/payment/status', to: 'payments#status'
       post '/callback', to: 'payments#callback'
 
       # Access control (RBAC)
-      resources :roles, only: %i[index create]
+      get '/permissions', to: 'roles#permissions'
+      resources :roles, only: %i[index create update destroy]
       resources :user_roles, only: %i[create destroy]
-      resources :users, only: %i[index create show] do
-        get :me, on: :collection
+      resources :users, only: %i[index create show update destroy] do
+        collection do
+          get :me
+          patch :change_password
+        end
+        member do
+          post :reset_password
+        end
       end
 
       # Church management
@@ -30,7 +38,7 @@ Rails.application.routes.draw do
         post :bulk_destroy, on: :collection
       end
       resources :devotions, only: %i[index create]
-      resources :leadership_positions, only: %i[index create]
+      resources :leadership_positions, only: %i[index show create update destroy]
       resources :fellowship_groups, only: %i[index show create update destroy] do
         member do
           post :members, action: :add_members
@@ -55,7 +63,7 @@ Rails.application.routes.draw do
       resource :site_settings, only: %i[show update]
 
       # Pastor appointment bookings
-      resources :appointments, only: [:create] do
+      resources :appointments, only: %i[index create update destroy] do
         collection { get :booked_slots }
         member { get :request_reschedule }
       end
