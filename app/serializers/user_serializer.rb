@@ -1,5 +1,6 @@
 # JSON shape of a user returned by the API (login, /users, /users/me).
-# The frontend uses `super_admin` and `permissions` to decide which pages and buttons to show.
+# The frontend uses `super_admin`, `must_change_password`, and `permissions`
+# to decide which pages and buttons to show.
 #
 # Preload `roles: :permissions` and `member` when serializing many users to avoid N+1 queries.
 class UserSerializer
@@ -14,8 +15,11 @@ class UserSerializer
       firstname: user.firstname,
       lastname: user.lastname,
       super_admin: user.super_admin,
+      must_change_password: user.must_change_password,
       roles: user.roles.map(&:name),
+      role_ids: user.roles.map(&:id),
       permissions: permission_names,
+      member_id: user.member_id,
       member: member_json
     }
   end

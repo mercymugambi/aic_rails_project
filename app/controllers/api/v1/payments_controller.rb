@@ -2,8 +2,18 @@ module Api
   module V1
     class PaymentsController < ApplicationController
       skip_before_action :verify_authenticity_token
+      before_action :authenticate_user!, only: :index
+      before_action -> { authorize!(:manage_finance, :view_reports) }, only: :index
 
       CONTRIBUTION_TYPES = %w[donation offering tithe other].freeze
+      SERIALIZED_FIELDS = %i[id phone_number amount contribution_type status transaction_id
+                             note result_description checkout_request_id created_at].freeze
+      STATUS_FIELDS = %i[status amount contribution_type transaction_id note result_description].freeze
+
+      # GET /api/v1/payments
+      def index
+        render json: Payment.order(created_at: :desc).as_json(only: SERIALIZED_FIELDS)
+      end
 
       # POST /api/v1/payment
       def create
@@ -40,11 +50,8 @@ module Api
         payment = Payment.find_by(checkout_request_id: checkout_id)
         return render json: { error: 'Payment not found' }, status: :not_found unless payment
 
-        if payment.status == 'pending'
-          query_mpesa_status(payment)
-          payment.reload
-        end
-        render json: payment.slice(:status, :amount, :contribution_type, :transaction_id, :note, :result_description)
+        query_mpesa_status(payment) if payment.status == 'pending'
+        render json: payment.reload.slice(*STATUS_FIELDS)
       rescue StandardError => e
         Rails.logger.error("M-PESA Status Query Error: #{e.message}")
         render json: { status: payment&.status || 'pending', error: 'Could not refresh status right now' }, status: :ok
@@ -56,14 +63,8 @@ module Api
         Rails.logger.info("M-PESA Callback received: #{payload.inspect}")
 
         stk_callback = payload.dig('Body', 'stkCallback') || {}
-        checkout_id = stk_callback['CheckoutRequestID'].to_s.strip
-        payment = Payment.find_by(checkout_request_id: checkout_id)
-
-        if payment
-          apply_callback_result(payment, stk_callback)
-        else
-          Rails.logger.warn("M-PESA callback for unknown CheckoutRequestID: #{checkout_id.inspect}")
-        end
+        payment = Payment.find_by(checkout_request_id: stk_callback['CheckoutRequestID'].to_s.strip)
+        payment ? apply_callback_result(payment, stk_callback) : Rails.logger.warn('Unknown CheckoutRequestID')
         render json: { ResultCode: 0, ResultDesc: 'Accepted' }, status: :ok
       rescue StandardError => e
         Rails.logger.error("M-PESA Callback Error: #{e.message}\n#{e.backtrace.first(5).join("\n")}")

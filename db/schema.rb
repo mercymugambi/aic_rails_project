@@ -1,4 +1,4 @@
-﻿# This file is auto-generated from the current state of the database. Instead
+# This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_30_193535) do
+ActiveRecord::Schema[7.0].define(version: 2026_11_05_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -220,6 +220,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_30_193535) do
   create_table "members_leadership_positions", id: false, force: :cascade do |t|
     t.bigint "member_id"
     t.bigint "leadership_position_id"
+    t.index ["leadership_position_id"], name: "index_unique_holder_per_leadership_position", unique: true
     t.index ["member_id", "leadership_position_id"], name: "index_member_positions", unique: true
   end
 
@@ -300,6 +301,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_30_193535) do
     t.bigint "member_id"
     t.boolean "super_admin", default: false
     t.string "jti", null: false
+    t.boolean "must_change_password", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

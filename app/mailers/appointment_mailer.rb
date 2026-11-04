@@ -6,13 +6,22 @@ class AppointmentMailer < ApplicationMailer
     @reschedule_url = "#{ENV.fetch('FRONTEND_URL', nil)}/appointments/reschedule/#{appointment.token}"
     mail(
       to: appointment.email,
-      subject: '✅ Appointment Confirmed — AIC Kabuku Church'
+      subject: '📅 Appointment Scheduled — AIC Kabuku Church'
+    )
+  end
+
+  def pastor_confirmed(appointment)
+    @appointment = appointment
+    mail(
+      to: appointment.email,
+      subject: '✅ Appointment Confirmed by Pastor — AIC Kabuku Church'
     )
   end
 
   def pastor_notification(appointment)
     @appointment = appointment
-    @reschedule_url = "#{ENV.fetch('FRONTEND_URL', 'http://localhost:3000')}/api/v1/appointments/#{appointment.token}/request_reschedule"
+    @dashboard_url = "#{ENV.fetch('FRONTEND_URL', 'http://localhost:3001')}/admin/appointments"
+    @reschedule_url = appointment.gmail_reschedule_url
     mail(
       to: appointment.pastor_email,
       subject: "📅 New Appointment Request: #{appointment.name} — #{appointment.appointment_date.strftime('%B %d, %Y')}"
